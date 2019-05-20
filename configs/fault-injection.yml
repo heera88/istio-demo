@@ -1,0 +1,26 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: myapp
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - app-gateway
+  http:
+  - fault:
+      abort:
+        httpStatus: 400
+        percent: 30
+    match:
+    - headers:
+        end-user:
+          exact: jason
+    route:
+    - destination:
+        host: myapp
+        subset: v1
+  - route:
+    - destination:
+        host: myapp
+        subset: v2
