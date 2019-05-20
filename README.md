@@ -67,7 +67,22 @@ myapp-v2-5bb8df789d-2xkqq   2/2     Running   0          108s
 
 The sidecar proxy has been injected and in each pod, you have 2 containers running. 
 
-## DestinationRule and VirtualService
+## Gateway, DestinationRule and VirtualService
+
+By default, any service running inside the service mesh is not automatically exposed outside of the cluster which means that we can’t get to it from the public Internet.
+
+To allow incoming traffic to the frontend service that runs inside the cluster, we need to create an external load balancer first. As part of the installation, Istio creates an  `istio-ingressgateway`  service that is of type  `LoadBalancer`and, with the corresponding Istio  `Gateway`  resource, can be used to allow traffic to the cluster.
+
+If you run `kubectl get svc istio-ingressgateway -n istio-system`, you will get an output similar to this one:
+
+```
+NAME TYPE CLUSTER-IP  EXTERNAL-IP PORT(S)  AGE
+
+istio-ingressgateway LoadBalancer 10.105.99.205 10.105.99.205 15020:30483/TCP,80:31380/TCP,443:31390/TCP,31400:31400/TCP,15029:32056/TCP,15030:30526/TCP,15031:30331/TCP,15032:31149/TCP,15443:31129/TCP 53d
+```
+The above output shows the Istio ingress gateway of type `LoadBalancer`.
+
+You can now create a `Gateway` that points to this ingressgateway to allow traffic into your cluster. To do this, run `kubectl apply -f configs/gateway.yml`
 
 DestinationRule is a way to group your service into subsets. 
 
